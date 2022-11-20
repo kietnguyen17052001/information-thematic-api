@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage ('Compile Stage') {
             steps {
-                withMaven(maven : 'information-thematic-maven_3_8_1') {
+                withMaven(maven : 'information-thematic-maven') {
                     sh 'mvn clean compile'
                 }
             }
@@ -11,7 +11,7 @@ pipeline {
 
         stage ('Testing Stage') {
             steps {
-                withMaven(maven : 'information-thematic-maven_3_8_1') {
+                withMaven(maven : 'information-thematic-maven') {
                     sh 'mvn test'
                 }
             }
@@ -19,7 +19,7 @@ pipeline {
 
         stage ('Deployment Stage') {
             steps {
-                withMaven(maven : 'information-thematic-maven_3_8_1') {
+                withMaven(maven : 'information-thematic-maven') {
                     sh 'mvn deploy'
                 }
             }
