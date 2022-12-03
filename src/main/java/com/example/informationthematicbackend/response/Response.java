@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.response;
 
-import com.example.informationthematicbackend.model.dto.common.ErrorDTO;
+import com.backend.pbl6schoolsystem.model.dto.common.ErrorDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
