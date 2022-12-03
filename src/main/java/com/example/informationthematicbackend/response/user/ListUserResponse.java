@@ -1,8 +1,8 @@
 package com.example.informationthematicbackend.response.user;
 
-import com.backend.pbl6schoolsystem.model.dto.common.UserDTO;
-import com.backend.pbl6schoolsystem.response.ErrorResponse;
-import com.backend.pbl6schoolsystem.response.PageResponse;
+import com.example.informationthematicbackend.model.dto.common.UserDTO;
+import com.example.informationthematicbackend.response.ErrorResponse;
+import com.example.informationthematicbackend.response.PageResponse;
 import lombok.*;
 
 import java.util.List;

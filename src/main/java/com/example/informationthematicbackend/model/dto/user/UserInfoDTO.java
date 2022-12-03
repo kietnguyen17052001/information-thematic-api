@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.model.dto.user;
 
-import com.backend.pbl6schoolsystem.model.dto.common.UserDTO;
+import com.example.informationthematicbackend.model.dto.common.UserDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

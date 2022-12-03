@@ -1,7 +1,7 @@
 package com.example.informationthematicbackend.response.calendar;
 
-import com.backend.pbl6schoolsystem.model.dto.calendar.CalendarEventDetailDTO;
-import com.backend.pbl6schoolsystem.response.ErrorResponse;
+import com.example.informationthematicbackend.model.dto.calendar.CalendarEventDetailDTO;
+import com.example.informationthematicbackend.response.ErrorResponse;
 import lombok.*;
 
 @Getter

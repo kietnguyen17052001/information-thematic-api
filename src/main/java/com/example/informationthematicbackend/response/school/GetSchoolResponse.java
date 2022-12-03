@@ -1,7 +1,7 @@
 package com.example.informationthematicbackend.response.school;
 
-import com.backend.pbl6schoolsystem.model.dto.common.SchoolDTO;
-import com.backend.pbl6schoolsystem.response.ErrorResponse;
+import com.example.informationthematicbackend.model.dto.common.SchoolDTO;
+import com.example.informationthematicbackend.response.ErrorResponse;
 import lombok.*;
 
 @Getter

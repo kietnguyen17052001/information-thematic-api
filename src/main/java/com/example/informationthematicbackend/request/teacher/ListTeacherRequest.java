@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.request.teacher;
 
-import com.backend.pbl6schoolsystem.request.PageRequest;
+import com.example.informationthematicbackend.request.PageRequest;
 import lombok.Getter;
 import lombok.Setter;
 

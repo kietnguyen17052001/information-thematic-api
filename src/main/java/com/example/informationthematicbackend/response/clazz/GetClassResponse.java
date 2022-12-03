@@ -1,7 +1,7 @@
 package com.example.informationthematicbackend.response.clazz;
 
-import com.backend.pbl6schoolsystem.model.dto.common.ClazzDTO;
-import com.backend.pbl6schoolsystem.response.ErrorResponse;
+import com.example.informationthematicbackend.model.dto.common.ClazzDTO;
+import com.example.informationthematicbackend.response.ErrorResponse;
 import lombok.*;
 
 @Getter

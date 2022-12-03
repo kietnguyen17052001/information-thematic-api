@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.request.calendar;
 
-import com.backend.pbl6schoolsystem.request.PageRequest;
+import com.example.informationthematicbackend.request.PageRequest;
 import lombok.Getter;
 import lombok.Setter;
 

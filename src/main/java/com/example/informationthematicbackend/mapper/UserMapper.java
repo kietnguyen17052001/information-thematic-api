@@ -1,9 +1,9 @@
 package com.example.informationthematicbackend.mapper;
 
-import com.backend.pbl6schoolsystem.common.constant.Constants;
-import com.backend.pbl6schoolsystem.model.dto.common.UserDTO;
-import com.backend.pbl6schoolsystem.model.entity.UserEntity;
-import com.backend.pbl6schoolsystem.util.RequestUtil;
+import com.example.informationthematicbackend.common.constant.Constants;
+import com.example.informationthematicbackend.model.dto.common.UserDTO;
+import com.example.informationthematicbackend.model.entity.UserEntity;
+import com.example.informationthematicbackend.util.RequestUtil;
 
 public class UserMapper {
     public static UserDTO entity2dto(UserEntity entity) {

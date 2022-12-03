@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.model.dto.teacher;
 
-import com.backend.pbl6schoolsystem.model.dto.common.UserDTO;
+import com.example.informationthematicbackend.model.dto.common.UserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 

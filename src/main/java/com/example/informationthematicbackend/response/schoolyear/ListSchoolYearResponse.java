@@ -1,8 +1,8 @@
 package com.example.informationthematicbackend.response.schoolyear;
 
-import com.backend.pbl6schoolsystem.model.dto.common.SchoolYearDTO;
-import com.backend.pbl6schoolsystem.response.ErrorResponse;
-import com.backend.pbl6schoolsystem.response.PageResponse;
+import com.example.informationthematicbackend.model.dto.common.SchoolYearDTO;
+import com.example.informationthematicbackend.response.ErrorResponse;
+import com.example.informationthematicbackend.response.PageResponse;
 import lombok.*;
 
 import java.util.List;

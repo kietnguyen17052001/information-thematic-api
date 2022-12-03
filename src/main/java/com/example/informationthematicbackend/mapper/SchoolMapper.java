@@ -1,7 +1,7 @@
 package com.example.informationthematicbackend.mapper;
 
-import com.backend.pbl6schoolsystem.model.dto.common.SchoolDTO;
-import com.backend.pbl6schoolsystem.model.entity.SchoolEntity;
+import com.example.informationthematicbackend.model.dto.common.SchoolDTO;
+import com.example.informationthematicbackend.model.entity.SchoolEntity;
 
 public class SchoolMapper {
     public static SchoolDTO entity2dto(SchoolEntity entity) {
