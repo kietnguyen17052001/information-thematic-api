@@ -1,0 +1,21 @@
+package com.example.informationthematicbackend.request.teacher;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CreateTeacherRequest {
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private String dateOfBirth;
+    private String street;
+    private String district;
+    private String city;
+    private String workingPosition;
+    private Long subjectId;
+    private Boolean gender;
+    private String nationality;
+}
