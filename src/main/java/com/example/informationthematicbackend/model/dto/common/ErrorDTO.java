@@ -1,4 +1,4 @@
-package com.example.informationthematicbackend.model.dto;
+package com.example.informationthematicbackend.model.dto.common;
 
 import lombok.Builder;
 import lombok.Getter;

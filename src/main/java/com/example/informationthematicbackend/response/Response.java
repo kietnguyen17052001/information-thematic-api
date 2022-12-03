@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.response;
 
-import com.example.informationthematicbackend.model.dto.ErrorDTO;
+import com.example.informationthematicbackend.model.dto.common.ErrorDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
