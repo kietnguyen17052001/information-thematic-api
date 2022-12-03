@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.model.dto.student;
 
-import com.backend.pbl6schoolsystem.model.dto.common.SubjectDTO;
+import com.example.informationthematicbackend.model.dto.common.SubjectDTO;
 import lombok.*;
 
 import java.io.Serializable;

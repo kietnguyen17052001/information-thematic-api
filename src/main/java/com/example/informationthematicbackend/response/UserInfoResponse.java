@@ -1,4 +1,4 @@
-package com.example.informationthematicbackend.model.dto.user;
+package com.example.informationthematicbackend.response;
 
 import com.example.informationthematicbackend.model.dto.common.UserDTO;
 import lombok.Builder;
@@ -11,7 +11,9 @@ import java.util.List;
 @Getter
 @Setter
 @Builder(setterPrefix = "set")
-public class UserInfoDTO implements Serializable {
+public class UserInfoResponse implements Serializable {
+    private Boolean success;
+    private ErrorResponse errorResponse;
     private UserDTO user;
     private List<String> authorities;
 }
