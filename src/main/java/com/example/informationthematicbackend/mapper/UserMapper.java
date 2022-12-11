@@ -1,6 +1,6 @@
 package com.example.informationthematicbackend.mapper;
 
-import com.example.informationthematicbackend.common.constant.Constants;
+import com.example.informationthematicbackend.common.constaint.Constants;
 import com.example.informationthematicbackend.model.dto.common.UserDTO;
 import com.example.informationthematicbackend.model.entity.UserEntity;
 import com.example.informationthematicbackend.util.RequestUtil;
