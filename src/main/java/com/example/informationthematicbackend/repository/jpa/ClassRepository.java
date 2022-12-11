@@ -1,0 +1,34 @@
+package com.example.informationthematicbackend.repository.jpa;
+
+import com.example.informationthematicbackend.model.entity.ClassEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ClassRepository extends JpaRepository<ClassEntity, Long> {
+    @Query("SELECT sc.clazz FROM StudentClazzEntity sc" +
+            " WHERE sc.student.userId = :studentId")
+    List<ClassEntity> findClassesByStudent(Long studentId);
+
+    @Query("SELECT c FROM ClassEntity c" +
+            " WHERE c.school.schoolId = :schoolId" +
+            " AND c.clazz = :className")
+    Optional<ClassEntity> findClassByName(@Param("className") String className, @Param("schoolId") Long schoolId);
+
+    @Query("SELECT c FROM ClassEntity c" +
+            " LEFT JOIN FETCH c.grade" +
+            " WHERE c.classId IN (:classIds)")
+    List<ClassEntity> findClassesByIds(@Param("classIds") List<Long> classIds);
+
+    @Query("SELECT c FROM ClassCalendarEventEntity cce" +
+            " INNER JOIN cce.clazz c" +
+            " ON cce.clazz.classId = c.classId" +
+            " LEFT JOIN FETCH c.grade" +
+            " WHERE cce.calendarEvent.calendarEventId = :calendarEventId")
+    List<ClassEntity> findClassesByCalendar(@Param("calendarEventId") Long calendarEventId);
+}
