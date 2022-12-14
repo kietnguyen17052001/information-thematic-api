@@ -1,10 +1,12 @@
 package com.example.informationthematicbackend.request.teacher;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(setterPrefix = "set")
 public class CreateTeacherRequest {
     private String firstName;
     private String lastName;
