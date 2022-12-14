@@ -15,8 +15,8 @@ public interface ExamResultRepository extends JpaRepository<ExamResultEntity, Lo
             " LEFT JOIN FETCH er.subject s" +
             " LEFT JOIN FETCH er.semester" +
             " WHERE lr.learningResultId = :learningResultId" +
-            " AND s.subjectId = :subjectId")
+            " AND s.subjectId IN (:subjectId)")
     List<ExamResultEntity> listExamResult(@Param("learningResultId") Long learningResultId,
-                                          @Param("subjectId") Long subjectId);
+                                          @Param("subjectIds") List<Long> subjectId);
 
 }
