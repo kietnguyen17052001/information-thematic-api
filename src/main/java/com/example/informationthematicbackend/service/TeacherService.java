@@ -1,6 +1,5 @@
 package com.example.informationthematicbackend.service;
 
-import com.example.informationthematicbackend.model.dto.teacher.TeacherDTO;
 import com.example.informationthematicbackend.request.teacher.CreateTeacherRequest;
 import com.example.informationthematicbackend.request.teacher.ListTeacherRequest;
 import com.example.informationthematicbackend.request.user.UpdateUserRequest;
