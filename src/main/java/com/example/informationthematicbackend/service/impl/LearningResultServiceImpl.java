@@ -3,6 +3,7 @@ package com.example.informationthematicbackend.service.impl;
 import com.example.informationthematicbackend.common.constaint.ErrorCode;
 import com.example.informationthematicbackend.common.enums.ExamType;
 import com.example.informationthematicbackend.common.enums.Semester;
+import com.example.informationthematicbackend.common.enums.Subject;
 import com.example.informationthematicbackend.common.exception.NotFoundException;
 import com.example.informationthematicbackend.model.dto.clazz.ExamResultClassDTO;
 import com.example.informationthematicbackend.model.dto.common.SchoolYearDTO;
@@ -57,11 +58,41 @@ public class LearningResultServiceImpl implements LearningResultService {
         // get exam result
         List<SubjectEntity> subjects = subjectRepository.findAll();
         subjects.sort(Comparator.comparing(SubjectEntity::getSubject));
-        Map<SubjectEntity/*subject*/, List<ExamResultEntity>/*exams*/> mapStudyScore = new LinkedHashMap<>();
-        List<ExamResultEntity> examResults;
+        List<LearningResultDetailDTO.StudyScore> studyScores = new ArrayList<>();
+        List<ExamResultEntity> examResults = examResultRepository.listExamResult(learningResultId, subjects.stream()
+                .map(SubjectEntity::getSubjectId)
+                .collect(Collectors.toList()));
         for (SubjectEntity subject : subjects) {
-            examResults = examResultRepository.listExamResult(learningResultId, subject.getSubjectId());
-            mapStudyScore.put(subject, examResults);
+            List<LearningResultDetailDTO.StudyScore.SemesterScore> semesterScores = new ArrayList<>();
+            List.of(Semester.SEMESTER_I, Semester.SEMESTER_II).forEach(s -> {
+                List<ExamResultEntity> scores = examResults.stream().filter(er -> er.getSemester().getSemesterId().equals(s.getId())
+                        && er.getSubject().getSubjectId().equals(subject.getSubjectId())).collect(Collectors.toList());
+                semesterScores.add(LearningResultDetailDTO.StudyScore.SemesterScore.builder()
+                        .setSemester(s.getName())
+                        .setScores(scores.stream()
+                                .map(sc -> LearningResultDetailDTO.StudyScore.SemesterScore.Score.builder()
+                                        .setScore(sc.getScore())
+                                        .setType(sc.getExamType())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .setAvgScore(calculateAvg(scores))
+                        .build());
+            });
+
+            Double avgSubjectAllSemester = 0D;
+            for (LearningResultDetailDTO.StudyScore.SemesterScore semesterScore : semesterScores) {
+                avgSubjectAllSemester += (semesterScore.getSemester().equals(Semester.SEMESTER_I.getName())) ?
+                        semesterScore.getAvgScore() : 2 * semesterScore.getAvgScore();
+            }
+
+            studyScores.add(LearningResultDetailDTO.StudyScore.builder()
+                    .setSubject(LearningResultDetailDTO.StudyScore.Subject.builder()
+                            .setSubjectId(subject.getSubjectId())
+                            .setSubjectName(subject.getSubject())
+                            .build())
+                    .setSemesterScores(semesterScores)
+                    .setAvgScore(avgSubjectAllSemester)
+                    .build());
         }
 
         return LearningResultDetailResponse.builder()
@@ -75,32 +106,8 @@ public class LearningResultServiceImpl implements LearningResultService {
                                 .setConduct(RequestUtil.blankIfNull(learningResult.getConduct()))
                                 .setIsPassed(Boolean.TRUE.equals(learningResult.getIsPassed()) ? Boolean.TRUE : Boolean.FALSE)
                                 .build())
-                        .setStudyScores(mapStudyScore.keySet().stream()
-                                .map(s -> LearningResultDetailDTO.StudyScore.builder()
-                                        .setSubject(SubjectDTO.builder()
-                                                .setSubjectId(RequestUtil.defaultIfNull(s.getSubjectId(), -1L))
-                                                .setSubject(RequestUtil.blankIfNull(s.getSubject()))
-                                                .build())
-                                        .setSemesters(List.of(Semester.SEMESTER_I, Semester.SEMESTER_II).stream()
-                                                .map(se -> LearningResultDetailDTO.StudyScore.SemesterDetail.builder()
-                                                        .setSemester(se.getName())
-                                                        .setExams(List.of(ExamType.TYPE_I, ExamType.TYPE_II, ExamType.TYPE_III, ExamType.TYPE_IV)
-                                                                .stream().map(et -> LearningResultDetailDTO.StudyScore.SemesterDetail.Exam.builder()
-                                                                        .setExam(et.getName())
-                                                                        .setScores(!mapStudyScore.get(s).isEmpty() ? mapStudyScore.get(s).stream()
-                                                                                .filter(e -> e.getExamType().equalsIgnoreCase(et.getName())
-                                                                                        && e.getSemester().getSemester().equalsIgnoreCase(se.getName()))
-                                                                                .map(sc -> sc.getScore())
-                                                                                .collect(Collectors.toList()) : Collections.emptyList())
-                                                                        .build())
-                                                                .collect(Collectors.toList()))
-                                                        .setAverageScore(calculateAvg(mapStudyScore.get(s), se.getId()))
-                                                        .build())
-                                                .collect(Collectors.toList()))
-                                        .setAverageScore((calculateAvg(mapStudyScore.get(s), Semester.SEMESTER_I.getId())
-                                                + calculateAvg(mapStudyScore.get(s), Semester.SEMESTER_II.getId()) * 2) / 3)
-                                        .build())
-                                .collect(Collectors.toList()))
+                        .setStudyScores(studyScores)
+                        .setAvgScore(calculateSchoolYearAvg(studyScores))
                         .build())
                 .build();
     }
@@ -229,6 +236,7 @@ public class LearningResultServiceImpl implements LearningResultService {
                             .build())
                     .setScores(examResults.stream()
                             .map(er -> ExamResultClassDTO.ExamResult.Score.builder()
+                                    .setId(er.getExamResultId())
                                     .setScore(er.getScore())
                                     .setType(er.getExamType())
                                     .build())
@@ -289,26 +297,43 @@ public class LearningResultServiceImpl implements LearningResultService {
 
         if (!CollectionUtils.isEmpty(studentScores)) {
             List<ExamResultEntity> examResults = new ArrayList<>();
+            List<ExamResultEntity> examResultsForRemove = new ArrayList<>();
             ExamResultEntity examResult;
             List<Long> studentIds = studentScores.stream().map(sc -> sc.getStudentId()).collect(Collectors.toList());
             List<LearningResultEntity> learningResults = learningResultRepository.findByStudentIdsAndSchoolYearId(studentIds, request.getSchoolYearId());
+            Optional<ExamResultEntity> examResultFromDB;
             for (int i = 0; i < studentScores.size(); i++) {
                 List<InputScoreRequest.StudentScore.Scores> scores = studentScores.get(i).getScores();
                 for (InputScoreRequest.StudentScore.Scores score : scores) {
-                    examResult = new ExamResultEntity();
-                    examResult.setStudent(learningResults.get(i).getProfileStudent().getStudent());
-                    examResult.setLearningResult(learningResults.get(i));
-                    examResult.setSemester(semester);
-                    examResult.setSchoolYear(schoolYear);
-                    examResult.setSubject(subject);
-                    examResult.setScore(score.getScore());
-                    examResult.setExamType(score.getType());
-                    examResult.setCreatedBy(user);
-                    examResult.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+                    examResultFromDB = examResultRepository.findFromDB(subject.getSubjectId(), schoolYear.getSchoolYearId(), semester.getSemesterId(),
+                            learningResults.get(i).getProfileStudent().getStudent().getUserId(), score.getType());
+                    if (examResultFromDB.isPresent()) {
+                        examResult = examResultFromDB.get();
+                        if (score.getScore() != null) {
+                            examResult.setScore(score.getScore());
+                            examResult.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                            examResult.setModifiedBy(user);
+                        } else {
+                            examResultsForRemove.add(examResult);
+                            continue;
+                        }
+                    } else {
+                        examResult = new ExamResultEntity();
+                        examResult.setStudent(learningResults.get(i).getProfileStudent().getStudent());
+                        examResult.setLearningResult(learningResults.get(i));
+                        examResult.setSemester(semester);
+                        examResult.setSchoolYear(schoolYear);
+                        examResult.setSubject(subject);
+                        examResult.setScore(score.getScore());
+                        examResult.setExamType(score.getType());
+                        examResult.setCreatedBy(user);
+                        examResult.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+                    }
                     examResults.add(examResult);
                 }
             }
             examResultRepository.saveAll(examResults);
+            examResultRepository.deleteAll(examResultsForRemove);
         }
 
         return NoContentResponse.builder()
@@ -322,17 +347,16 @@ public class LearningResultServiceImpl implements LearningResultService {
     }
 
     // calculate average
-    private double calculateAvg(List<ExamResultEntity> examResults, Long semesterId) {
-        examResults = examResults.stream()
-                .filter(e -> e.getSemester().getSemesterId().equals(semesterId))
-                .collect(Collectors.toList());
+    private double calculateAvg(List<ExamResultEntity> examResults) {
         int index = 0;
         double avg = 0.0;
         for (ExamResultEntity examResult : examResults) {
-            if (List.of(ExamType.TYPE_I.getName(), ExamType.TYPE_II.getName()).contains(examResult.getExamType())) {
+            if (List.of(ExamType.A1.getName(), ExamType.A2.getName(), ExamType.A3.getName(), ExamType.B1.getName(),
+                    ExamType.B2.getName(), ExamType.B3.getName(), ExamType.B4.getName()).contains(examResult.getExamType())) {
                 avg += examResult.getScore();
                 index += 1;
-            } else if (ExamType.TYPE_III.getName().equals(examResult.getExamType())) {
+            } else if (List.of(ExamType.C1.getName(), ExamType.D1.getName(), ExamType.D2.getName(), ExamType.D3.getName(),
+                    ExamType.D4.getName()).equals(examResult.getExamType())) {
                 avg += examResult.getScore() * 2;
                 index += 2;
             } else {
@@ -341,5 +365,17 @@ public class LearningResultServiceImpl implements LearningResultService {
             }
         }
         return index != 0 ? avg / index : 0.0;
+    }
+
+    private double calculateSchoolYearAvg(List<LearningResultDetailDTO.StudyScore> studyScores) {
+        double avg = 0.0;
+        for (LearningResultDetailDTO.StudyScore studyScore : studyScores) {
+            if (List.of(Subject.MATHS, Subject.LITERATURE).contains(studyScore.getSubject().getSubjectName())) {
+                avg += studyScore.getAvgScore() * 2;
+            } else {
+                avg += studyScore.getAvgScore();
+            }
+        }
+        return avg / 15.0;
     }
 }
